@@ -1,7 +1,7 @@
 ﻿---
 - name: Connect to play
   hosts: "{{ cluster_name }}"
-  connection: local
+  # connection: local
   gather_facts: no
   vars_files:
     - vars/Access_NetApp.yml
@@ -24,4 +24,3 @@
 
   roles:
   - netapp_api
-  
