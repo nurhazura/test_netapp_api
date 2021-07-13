@@ -1,3 +1,3 @@
 # test_netapp_api
 
-testing netapp API call
+testing netapp CDOT API call
