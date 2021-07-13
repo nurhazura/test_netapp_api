@@ -23,4 +23,4 @@
   - vars/Access_NetApp.yml
 
   roles:
-    - netapp_api
+  - netapp_api
