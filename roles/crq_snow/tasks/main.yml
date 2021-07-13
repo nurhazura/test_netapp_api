@@ -1,0 +1,39 @@
+﻿- name: configure client to pass  ## client name & capacity as part of the var to pass the info to the wf, relook on the capacity
+  set_fact:
+    hostname: "{{ item }}"
+  when: vsphere_deploy_vm_name[:3] in hostvars[item].site_list.split(',')
+  with_items: "{{ hostvars }}"
+  register: client_exist
+  run_once: true
+
+- name: Authorization to get azure app token
+  uri:
+    url: "https://login.microsoftonline.com/{{AZURE_TENANT_ID}}/oauth2/v2.0/token" 
+    method: GET
+    body_format: form-urlencoded
+    body: 
+      client_id: "{{ lookup('env', 'AD_USERNAME') }}"
+      client_secret: "{{ lookup('env', 'AD_PASSWORD') }}"
+      grant_type: client_credentials
+      scope: api://app.emcitizendev.service-now.xom.com/.default
+    return_content: yes  
+  delegate_to: localhost 
+  register: token
+
+- name: Dump token output
+  debug:
+    msg: "{{ token.json }}"
+
+############################## to backup ops #############################
+- name: Create Standard Change in SNOW
+  uri:
+    url: "https://emcitizendev.service-now.com/api/sn_chg_rest/change/standard/{{standard_change_template_id}}"
+    method: POST
+    body_format: json
+    body:
+      short_description: "Please investigate and perform manual intervention for {{ vsphere_deploy_vm_name }}"
+    headers:
+      Authorization: "Bearer {{ token.json.access_token }}"
+    validate_certs: no
+  register: response
+  delegate_to: localhost

@@ -1,0 +1,261 @@
+﻿---
+- name: configure client to pass  ## client name & capacity as part of the var to pass the info to the wf, relook on the capacity
+  set_fact:
+    hostname: "{{ item }}"
+  when: vsphere_deploy_vm_name[:3] in hostvars[item].site_list.split(',')
+  with_items: "{{ hostvars }}"
+  register: client_exist
+  run_once: true
+
+- debug: msg= "{{client_exist}}"
+
+# ################### run api against default CS DALCVC01 when client is undefined  ####################
+# - name: Generate Token for client undefined
+#   win_uri:
+#     url: "https://dalbkc11.na.xom.com/webconsole/api/Login"
+#     method: POST
+#     content_type: "application/json"
+#     return_content: yes
+#     headers:
+#       Authorization: "Bearer KKkLwVLL78NJGQesYHEi" 
+#       content_type: "application/json"
+#     body: 
+#       domain: "na"
+#       username: "xsStorAuto01"
+#       password: "QmlnRGF0YUlzc3VlczEzNTc5U3RvcmFnZQ=="
+#     validate_certs: no
+#   run_once: true
+#   register: result_undefined
+#   when: hostname is undefined
+
+# - name: post result undefined
+#   debug:
+#     msg: "{{ result_undefined.content }}"
+#   when: hostname is undefined
+
+# - name: extracting the token undefined
+#   set_fact:
+#     token_undefined: "{{ result_undefined.content.split('=')[9] | replace('capability','') | regex_replace('\"','') }}" 
+#   when: hostname is undefined
+  
+# - name: token final result undefined
+#   debug:
+#     msg: "{{ token_undefined }}"
+#   when: hostname is undefined
+
+# - name: tokena to login undefined
+#   set_fact:
+#     token_undefinedfinal: "{{ token_undefined }}"
+#   when: hostname is undefined
+
+# #################### call GET API to GET client ID ###########################
+
+# - name: run API to GET Client ID for client name when undefined
+#   win_uri:
+#     url: "http://dalbkc11/webconsole/api/GetId?clientname={{ vsphere_deploy_vm_name }}"
+#     follow_redirects: none
+#     method: GET
+#     return_content: yes
+#     headers:
+#       Accept: "application/json"
+#       Authtoken: "{{ token_undefined }}"
+#       Authorization: "Bearer KKkLwVLL78NJGQesYHEi" 
+#   run_once: true
+#   register: result_getundefined
+#   when: hostname is undefined
+
+# - name: GET result undefined
+#   debug:
+#     msg: "{{ result_getundefined.json.clientId }}"
+#   when: hostname is undefined
+
+# - name: GET result to declare client id undefined
+#   set_fact:
+#     get_fact: "{{ result_getundefined.json.clientId }}"
+#   when: hostname is undefined
+
+# ################# run API to trigger WF #####################
+
+# # - name: run API to trigger WorkFlow when undefined
+# #   win_uri:
+# #     url: "https://{{ web_console }}/webconsole/api/Workflow/XOM - ClientBackupAutomation/Action/Execute/"
+# #     method: POST
+# #     content_type: "application/xml"
+# #     return_content: yes
+# #     status_code: 200
+# #     headers:
+# #       Accept: "application/json"
+# #       Authtoken: "{{ token_data }}"
+# #       content_type: "application/xml"
+# #       Authorization: "Bearer KKkLwVLL78NJGQesYHEi" 
+# #     body: "{{lookup('template','wf.xml')}}"
+# #     validate_certs: no
+# #   run_once: true
+# #   register: workflow_postundefined
+# #   when: hostname is undefined
+
+# # - name: Debug POST Workflow result undefined
+# #   debug:
+# #     msg: "{{ workflow_postundefined.json }}"
+# #   when: hostname is undefined
+
+# # - name: Set fact POST Workflow result undefined
+# #   set_fact:
+# #     postwf_undefined: "{{ workflow_postundefined.json }}"
+# #   when: hostname is undefined
+
+# ############### create WO in SNOW to panthera to add site code into inventory #####################
+
+# # - name: set fact to notify panthera
+# #   set_fact: 
+# #     setfact_undefined: "{{ setfact_undefined | default([]) }}"
+# #   with_items: "{{ postwf_undefined }}"
+# #   when: hostname is undefined
+
+# - debug: msg="proceed on generating ticket to Panthera group"
+#   when: hostname is undefined
+
+# - meta: end_play
+#   when: hostname is undefined
+
+# ################## End play for Undefined site code ####################
+
+# - debug: msg="Package exist continue task"
+
+# - name: debug hostname
+#   debug:
+#     msg: "{{ hostname }}"
+#   run_once: true
+#   ignore_errors: yes
+
+# - name: set fact hostname
+#   set_fact:
+#     host_name: "{{ hostvars[hostname]['host'] }}"
+#   run_once: true 
+
+# - name: set fact web console
+#   set_fact:
+#     web_console: "{{ hostvars[hostname]['webconsole'] }}"
+#   run_once: true
+
+# - name: debug web console
+#   debug:
+#     msg: "{{ web_console }}"
+#   run_once: true
+
+# - name: debug hostvars
+#   debug:
+#     msg: "{{ hostvars }}"
+#   run_once: true
+
+# - name: debug hostname
+#   debug:
+#     msg: "{{ host_name }}"
+#   run_once: true
+
+
+# ################# CV API Call to run wf ####################
+
+# - name: Generate Token
+#   win_uri:
+#     url: "https://{{ web_console }}/webconsole/api/Login"
+#     method: POST
+#     content_type: "application/json"
+#     return_content: yes
+#     headers:
+#       Authorization: "Bearer KKkLwVLL78NJGQesYHEi" 
+#       content_type: "application/json"
+#     body: 
+#       domain: "na"
+#       username: "xsStorAuto01"
+#       password: "QmlnRGF0YUlzc3VlczEzNTc5U3RvcmFnZQ=="
+#     validate_certs: no
+#   run_once: true
+#   register: result_post
+
+# - name: post result
+#   debug:
+#     msg: "{{ result_post.content }}"
+  
+# - name: extracting the token
+#   set_fact:
+#     token_data: "{{ result_post.content.split('=')[9] | replace('capability','') | regex_replace('\"','') }}" 
+
+# - name: token final result
+#   debug:
+#     msg: "{{ token_data }}"
+
+# - name: tokena to login
+#   set_fact:
+#     token_final: "{{ token_data }}"
+
+# #################### call GET API to GET client ID ###########################
+
+# - name: run API to GET Client ID for client name
+#   win_uri:
+#     url: "http://{{ web_console }}/webconsole/api/GetId?clientname={{ vsphere_deploy_vm_name }}"
+#     follow_redirects: none
+#     method: GET
+#     return_content: yes
+#     headers:
+#       Accept: "application/json"
+#       Authtoken: "{{ token_data }}"
+#       Authorization: "Bearer KKkLwVLL78NJGQesYHEi" 
+#   run_once: true
+#   register: result_get
+
+# - name: GET result
+#   debug:
+#     msg: "{{ result_get.json.clientId }}"
+
+# - name: GET result to declare client id
+#   set_fact:
+#     get_fact: "{{ result_get.json.clientId }}"
+
+# ################# run API to trigger WF #####################
+# - name: run API to trigger WorkFlow 
+#   win_uri:
+#     url: "https://{{ web_console }}/webconsole/api/Workflow/XOM - ClientBackupAutomation/Action/Execute/"
+#     method: POST
+#     content_type: "application/xml"
+#     return_content: yes
+#     status_code: 200
+#     headers:
+#       Accept: "application/json"
+#       Authtoken: "{{ token_data }}"
+#       content_type: "application/xml"
+#       Authorization: "Bearer KKkLwVLL78NJGQesYHEi" 
+#     body: "{{lookup('template','wf.xml')}}"
+#     validate_certs: no
+#   run_once: true
+#   register: workflow_post
+
+# - name: Debug POST Workflow result
+#   debug:
+#     msg: "{{ workflow_post.json }}"
+
+# - name: Set fact POST Workflow result 
+#   set_fact:
+#     postwf_fact: "{{ workflow_post.json }}"
+
+
+# ################## when wf failed, create crq to ops #################
+
+# - name: set fact if failed two
+#   set_fact: 
+#     failwhen_fact: "{{ failwhen_fact | default([]) }}"
+#   with_items: "{{ postwf_fact }}"
+#   when: "{{ ('errorMessage') is defined }}"
+
+# - meta: end_play
+#   when: (failwhen_fact == true in item) 
+
+# - debug: msg="proceed on generating CRQ to backup ops"
+
+
+
+# ## add capacity ###
+# ### differentiate infra op under "supported squad" goes o dalbkc14 webconsole cv dalcvc04 ####
+# ### info comes from CRQ -client name and supported squad ####
+
+# ## create wo to backup ops if fails and send logging where the script is running #####

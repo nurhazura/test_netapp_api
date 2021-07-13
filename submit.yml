@@ -1,0 +1,31 @@
+﻿---
+- name: Connect to Commvault server
+  hosts: dalcvc01
+  connection: local
+  gather_facts: no
+
+  vars_files:
+  - vars/all.yml
+  roles:
+  - commvault_api
+
+- name: Azure app token for Work Order
+  hosts: dalcvc01
+  connection: local
+  vars:
+    AZURE_TENANT_ID: "d1ee1acd-bc7a-4bc4-a787-938c49a83906" 
+    wo_template_id: "4da7f8331b0134104a61ebd22a4bcb0e"
+  roles:
+  - { role: wo_snow, when: hostname is undefined}
+
+- name: Azure app token for Standard change
+  hosts: dalcvc01
+  connection: local
+  vars:
+    AZURE_TENANT_ID: "d1ee1acd-bc7a-4bc4-a787-938c49a83906" 
+    standard_change_template_id: "151f9ba71b8570101cf976ae034bcb03" 
+  roles:
+  - { role: crq_snow, when: hostname is defined }
+
+
+
