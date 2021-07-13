@@ -1,7 +1,7 @@
 ﻿---
 - name: run ONTAP gather facts for aggregate info with specified fields
   na_ontap_info_rest:
-      hostname: "{{ inventory_hostname }}"
+      hostname: "{{ cluster_name }}"
       username: "{{ netapp_username }}"
       password: "{{ netapp_password }}"
       https: true
